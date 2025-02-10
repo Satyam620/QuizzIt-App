@@ -12,7 +12,7 @@ import com.venom.quizzapp.model.QuizViewModel
 import com.venom.quizzapp.screens.CategoryScreen
 import com.venom.quizzapp.screens.ScoreScreen
 
-sealed class Screen(val route: String){
+sealed class Screen(val route: String) {
     data object Home : Screen("Home")
     data object Profile : Screen("Profile")
     data object Leaderboard : Screen("Leaderboard")
@@ -22,12 +22,12 @@ sealed class Screen(val route: String){
 }
 
 @Composable
-fun MainScreen(viewModel: QuizViewModel, navController: NavHostController){
+fun MainScreen(viewModel: QuizViewModel, navController: NavHostController) {
 
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         //Bottom Navigation Options
         composable(Screen.Home.route) {
-            HomeScreen(viewModel,navController)
+            HomeScreen(viewModel, navController)
         }
         composable(Screen.Categories.route) {
             CategoryScreen(viewModel, navController)
@@ -36,7 +36,7 @@ fun MainScreen(viewModel: QuizViewModel, navController: NavHostController){
             LeaderBoardScreen(viewModel, navController)
         }
         composable(Screen.Profile.route) {
-            ProfileScreen(viewModel,navController)
+            ProfileScreen(viewModel, navController)
         }
 
         //Hidden Navigation Options

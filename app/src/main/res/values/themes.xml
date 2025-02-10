@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.Quizzapp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.AnimatedSplashScreen" parent="Theme.SplashScreen.Common">
+        <item name="postSplashScreenTheme">@style/Theme.AnimatedSplashScreen</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/animated_logo</item>
+    </style>
 </resources>

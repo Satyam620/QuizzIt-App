@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -52,12 +51,14 @@ fun TopBar(name: String) {
                 textAlign = TextAlign.Center,
                 text = name.uppercase(),
                 fontSize = 40.sp,
-                modifier = Modifier.fillMaxWidth().height(60.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
                 fontWeight = FontWeight.ExtraBold,
                 lineHeight = 60.sp
             )
             HorizontalDivider(
-                color =MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                 modifier = Modifier
                     .fillMaxWidth(),
                 thickness = 2.dp
@@ -72,7 +73,7 @@ data class NavItem(val label: String, val route: String, val icon: Int, val inde
 fun BottomBar(name: String, navController: NavHostController) {
     QuizzappTheme {
         val iconSize = 40.dp
-        val iconColor =MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        val iconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
         val selectedIconColor = MaterialTheme.colorScheme.secondary
         val buttonColors =
             remember { mutableStateListOf(iconColor, iconColor, iconColor, iconColor) }
@@ -145,7 +146,7 @@ fun SubmitButton(text: String, onClick: () -> Unit) {
                 contentColor = MaterialTheme.colorScheme.secondary
             )
         ) {
-            Text(text = text.uppercase(), fontSize = 25.sp, lineHeight = 40.sp)
+            Text(text = text.uppercase(), fontSize = 25.sp, textAlign = TextAlign.Center)
         }
     }
 }

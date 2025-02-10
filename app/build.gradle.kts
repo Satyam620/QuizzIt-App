@@ -1,9 +1,16 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 }
+
+val localProperties = Properties()
+localProperties.load(FileInputStream(rootProject.file("local.properties")))
 
 android {
     namespace = "com.venom.quizzapp"
@@ -23,7 +30,15 @@ android {
     }
 
     buildTypes {
+        buildFeatures {
+            buildConfig = true
+        }
+
+        debug {
+            buildConfigField("String", "API_KEY", "\"${localProperties["API_KEY"]}\"")
+        }
         release {
+            buildConfigField("String", "API_KEY", "\"${localProperties["API_KEY"]}\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -52,11 +67,18 @@ android {
 }
 
 dependencies {
-
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.coil.compose) // For image loading
     //Network calls
     implementation(libs.retrofit)
     //Json to kotlin object mapping
     implementation(libs.converter.gson)
+    //Splash Screen Dependency
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -71,6 +93,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime.android)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.vectordrawable.animated)
+    implementation(libs.androidx.animation.graphics.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -43,7 +43,7 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
 
     fun updateButtonColors(selectedIndex: Int) {
         buttonColors.fill(optionColor)
-        buttonColors[selectedIndex] = selectedOpt// Highlight the selected button
+        buttonColors[selectedIndex] = selectedOpt
     }
 
     fun decodeHtml(encodedString: String): String {
@@ -65,11 +65,7 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
         ) {
             when {
                 viewModel.questionsState.value.loading -> {
-                    CircularProgressIndicator(
-                        strokeWidth = 10.dp,
-                        modifier = Modifier.fillMaxSize(.7F),
-                        color = MaterialTheme.colorScheme.secondary
-                    )
+                    AnimatedLogo()
                 }
 
                 viewModel.questionsState.value.error != null -> {
@@ -130,13 +126,17 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                                     containerColor = buttonColors[index],
                                     contentColor = MaterialTheme.colorScheme.primary
                                 ),
-                                border = BorderStroke(2.dp,MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
+                                border = BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                                )
                             ) {
                                 Text(
                                     text = decodeHtml(item),
                                     fontSize = 20.sp,
                                     lineHeight = 25.sp,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.primary,
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }

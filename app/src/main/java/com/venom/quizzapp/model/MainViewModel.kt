@@ -5,12 +5,20 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.venom.quizzapp.BuildConfig
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class QuizViewModel : ViewModel() {
+    private val _isLoaded = MutableStateFlow(false)
+    val isLoaded = _isLoaded.asStateFlow()
+
     init {
         fetchTrivia()
         fetchCategories()
+        _isLoaded.value = true
     }
 
     //Question State Management.
@@ -22,17 +30,47 @@ class QuizViewModel : ViewModel() {
             try {
                 val response = questionService.getQuestion(category = category)
                 _questionsState.value = _questionsState.value.copy(
-                    list = response.results,
-                    loading = false,
-                    error = null
+                    list = response.results, loading = false, error = null
                 )
                 initializeQuestion()
             } catch (e: Exception) {
                 _questionsState.value = _questionsState.value.copy(
-                    loading = false,
-                    error = "Error Fetching Questions"
+                    loading = false, error = "Error Fetching Questions"
                 )
             }
+        }
+    }
+
+    private val apiKey = BuildConfig.API_KEY
+
+    fun sendGeminiRequest(query: String) {
+        val request = GeminiRequest(
+            contents = listOf(
+                Content(
+                    parts = listOf(
+                        Part(
+                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions about $query in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"any\",\n      \"category\": \"$query\",\n      \"question\": \"Example question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
+                        )
+                    )
+                )
+            ), generationConfig = GenerationConfig(responseMimeType = "application/json")
+        )
+        // Send request
+        viewModelScope.launch {
+            try {
+                val geminiresponse = GeminiService.generateTrivia(apiKey, request)
+                val jsonString = geminiresponse.candidates[0].content.parts[0].text
+                val response = Gson().fromJson(jsonString, QuestionResponse::class.java)
+                _questionsState.value = _questionsState.value.copy(
+                    list = response.results, loading = false, error = null
+                )
+                initializeQuestion()
+            } catch (e: Exception) {
+                _questionsState.value = _questionsState.value.copy(
+                    loading = false, error = "Error Fetching Questions"
+                )
+            }
+
         }
     }
     //Question Data management.
@@ -100,14 +138,11 @@ class QuizViewModel : ViewModel() {
             try {
                 val response = categoryService.getCategories()
                 _categoriesState.value = _categoriesState.value.copy(
-                    list = response.trivia_categories,
-                    loading = false,
-                    error = null
+                    list = response.trivia_categories, loading = false, error = null
                 )
             } catch (e: Exception) {
                 _categoriesState.value = _categoriesState.value.copy(
-                    loading = false,
-                    error = "Error Fetching Categories ${e.message}"
+                    loading = false, error = "Error Fetching Categories ${e.message}"
                 )
             }
         }
@@ -122,14 +157,11 @@ class QuizViewModel : ViewModel() {
             try {
                 val response = TriviaService.getFact()
                 _triviaState.value = _triviaState.value.copy(
-                    fact = response,
-                    loading = false,
-                    error = null
+                    fact = response, loading = false, error = null
                 )
             } catch (e: Exception) {
                 _triviaState.value = _triviaState.value.copy(
-                    loading = false,
-                    error = "Error Fetching Trivia Fact ${e.message}"
+                    loading = false, error = "Error Fetching Trivia Fact ${e.message}"
                 )
             }
         }
@@ -160,20 +192,14 @@ data class LeaderBoardItem(val rank: Int, val name: String, val score: Int)
 
 //FINAL DATA CLASSES. Do not Mess with these data Classes.
 data class QuestionState(
-    val loading: Boolean = true,
-    val list: List<Question> = emptyList(),
-    val error: String? = null
+    val loading: Boolean = true, val list: List<Question> = emptyList(), val error: String? = null
 )
 
 data class CategoryState(
-    val loading: Boolean = true,
-    val list: List<Category> = emptyList(),
-    val error: String? = null
+    val loading: Boolean = true, val list: List<Category> = emptyList(), val error: String? = null
 )
 
 data class TriviaState(
-    val loading: Boolean = true,
-    val fact: TriviaResponse?=null,
-    val error: String? = null
+    val loading: Boolean = true, val fact: TriviaResponse? = null, val error: String? = null
 )
 

@@ -49,10 +49,12 @@ fun ScoreScreen(viewModel: QuizViewModel, navController: NavHostController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Congratulations",
-                        fontSize = 40.sp,
+                        text = if (viewModel.totalScore > 5) "Congratulations!" else "Better luck next time!",
+                        fontSize = 35.sp,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 40.sp
                     )
                     Image(
                         modifier = Modifier.padding(20.dp),
@@ -61,7 +63,7 @@ fun ScoreScreen(viewModel: QuizViewModel, navController: NavHostController) {
                     )
                     Text(
                         text = "Your score is ${viewModel.totalScore}",
-                        fontSize = 40.sp,
+                        fontSize = 35.sp,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .width(IntrinsicSize.Max)

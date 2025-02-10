@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,13 +47,7 @@ fun HomeScreen(viewModel: QuizViewModel, navHostController: NavHostController) {
             ) {
                 when {
                     viewModel.triviaState.value.loading -> {
-                        CircularProgressIndicator(
-                            strokeWidth = 10.dp,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(50.dp, 200.dp),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+                        AnimatedLogo()
                     }
 
                     viewModel.triviaState.value.error != null -> {
@@ -68,7 +61,9 @@ fun HomeScreen(viewModel: QuizViewModel, navHostController: NavHostController) {
                     else -> {
                         //Display trivia fact
                         Column(
-                            modifier = Modifier.padding(20.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
