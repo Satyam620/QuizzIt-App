@@ -13,7 +13,7 @@ fun AnimatedLogo() {
     AndroidView(
         factory = { ctx ->
             ImageView(ctx).apply {
-                setImageResource(R.drawable.animated_logo) // Load AVD
+                setImageResource(R.drawable.loading_logo) // Load AVD
 
                 fun startAnimationLoop() {
                     post {
