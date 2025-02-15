@@ -34,7 +34,7 @@ fun HomeScreen(viewModel: QuizViewModel, navHostController: NavHostController) {
                 TopBar("Home")
             },
             bottomBar = {
-                BottomBar("Home", navHostController)
+                BottomBar(viewModel, "Home", navHostController)
             },
         ) { innerPadding ->
             Column(

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -121,7 +122,7 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth(),
-                                shape = ButtonDefaults.shape,
+                                shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
                                     containerColor = buttonColors[index],
                                     contentColor = MaterialTheme.colorScheme.primary
@@ -145,8 +146,9 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                         buttonColors.fill(optionColor)
                         viewModel.updateQuestion(selectedOption)
                         if (viewModel.navigateToScore.value) {
-                            navController.navigate(Screen.Score.route)
+                            navController.navigate(Screen.Answer.route)
                         }
+                        selectedOption = null
                     }
                 }
             }

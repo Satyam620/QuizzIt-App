@@ -52,8 +52,7 @@ fun CategoryScreen(viewModel: QuizViewModel, navController: NavHostController) {
                 TopBar("Category")
             },
             bottomBar = {
-
-                BottomBar("Category", navController)
+                BottomBar(viewModel, "Category", navController)
             }
         ) { innerPadding ->
             Column(
@@ -90,7 +89,7 @@ fun CategoryScreen(viewModel: QuizViewModel, navController: NavHostController) {
                             ),
                         colors = TextFieldDefaults.colors(
                             focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                            focusedIndicatorColor = Color.Transparent,
                             unfocusedLabelColor = Color.Gray,
                             unfocusedIndicatorColor = Color.Transparent,
                             cursorColor = MaterialTheme.colorScheme.primary,
@@ -114,7 +113,7 @@ fun CategoryScreen(viewModel: QuizViewModel, navController: NavHostController) {
                             navController.navigate(Screen.QuizScreen.route)
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Black,
+                            containerColor = MaterialTheme.colorScheme.background,
                             contentColor = MaterialTheme.colorScheme.secondary
                         ),
                         shape = RoundedCornerShape(10.dp),
@@ -167,7 +166,7 @@ fun CategoryButton(category: String, onClick: () -> Unit) {
             onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth(.95f),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 MaterialTheme.colorScheme.background,
                 MaterialTheme.colorScheme.primary

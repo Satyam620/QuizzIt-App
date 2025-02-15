@@ -32,7 +32,9 @@ import com.venom.quizzapp.ui.theme.QuizzappTheme
 fun LeaderBoardScreen(viewModel: QuizViewModel, navController: NavHostController) {
     Scaffold(
         topBar = { TopBar("Leaderboard") },
-        bottomBar = { BottomBar("Leaderboard", navController) }
+        bottomBar = {
+            BottomBar(viewModel, "Leaderboard", navController)
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -47,7 +49,11 @@ fun LeaderBoardScreen(viewModel: QuizViewModel, navController: NavHostController
                 modifier = Modifier
                     .fillMaxWidth(.9F)
                     .height(50.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f), RoundedCornerShape(10.dp))
+                    .border(
+                        2.dp,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                        RoundedCornerShape(10.dp)
+                    )
                     .padding(start = 15.dp, end = 15.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -103,7 +109,11 @@ fun LeaderboardColumn(rank: String, name: String, score: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth(.9f)
-            .border(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+            .border(
+                2.dp,
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                RoundedCornerShape(20.dp)
+            )
             .height(50.dp)
             .padding(start = 30.dp, end = 20.dp),
         verticalAlignment = Alignment.CenterVertically,

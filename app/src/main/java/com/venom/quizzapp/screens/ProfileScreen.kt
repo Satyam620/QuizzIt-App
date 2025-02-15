@@ -30,7 +30,7 @@ fun ProfileScreen(viewModel: QuizViewModel, navController: NavHostController) {
                 TopBar("Profile")
             },
             bottomBar = {
-                BottomBar("Profile", navController)
+                BottomBar(viewModel, "Profile", navController)
             },
         ) { innerPadding ->
             Column(

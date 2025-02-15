@@ -101,10 +101,12 @@ class QuizViewModel : ViewModel() {
         }
     }
 
+    val selectedOptions = mutableListOf<String>()
     fun updateQuestion(selectedOption: String?) {
         if (selectedOption == questionsState.value.list[currentPosition].correct_answer) {
             score++
         }
+        selectedOptions.add(selectedOption ?: "Not Selected")
 
         currentPosition++
         navigateToScore.value = (currentPosition == questionsState.value.list.size)
@@ -152,7 +154,7 @@ class QuizViewModel : ViewModel() {
     private val _triviaState = mutableStateOf(TriviaState())
     val triviaState: State<TriviaState> = _triviaState
 
-    private fun fetchTrivia() {
+    fun fetchTrivia() {
         viewModelScope.launch {
             try {
                 val response = TriviaService.getFact()

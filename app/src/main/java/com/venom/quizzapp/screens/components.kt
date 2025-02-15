@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.venom.quizzapp.R
 import com.venom.quizzapp.Screen
+import com.venom.quizzapp.model.QuizViewModel
 import com.venom.quizzapp.ui.theme.QuizzappTheme
 
 
@@ -70,7 +71,7 @@ fun TopBar(name: String) {
 data class NavItem(val label: String, val route: String, val icon: Int, val index: Int)
 
 @Composable
-fun BottomBar(name: String, navController: NavHostController) {
+fun BottomBar(viewModel: QuizViewModel,name: String, navController: NavHostController) {
     QuizzappTheme {
         val iconSize = 40.dp
         val iconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
@@ -116,6 +117,9 @@ fun BottomBar(name: String, navController: NavHostController) {
                         onClick = {
                             navController.navigate(item.route)
                             updateButtonColors(item.index)
+                            if(item.label == "Home") {
+                                viewModel.fetchTrivia()
+                            }
                         },
                         enabled = enabled[item.index]
                     ) {
@@ -162,7 +166,7 @@ fun TopPreview() {
 fun BottomPreview() {
     QuizzappTheme {
         val context = LocalContext.current
-        BottomBar(name = "Home", navController = NavHostController(context))
+        BottomBar(QuizViewModel(),name = "Home", navController = NavHostController(context))
     }
 }
 
