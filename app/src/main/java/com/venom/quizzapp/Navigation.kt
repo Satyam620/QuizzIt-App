@@ -11,6 +11,7 @@ import com.venom.quizzapp.screens.QuizScreen
 import com.venom.quizzapp.model.QuizViewModel
 import com.venom.quizzapp.screens.AnswerScreen
 import com.venom.quizzapp.screens.CategoryScreen
+import com.venom.quizzapp.screens.GenerateQuizScreen
 import com.venom.quizzapp.screens.ScoreScreen
 
 sealed class Screen(val route: String) {
@@ -21,6 +22,7 @@ sealed class Screen(val route: String) {
     data object Categories : Screen("Categories")
     data object Score : Screen("Score")
     data object Answer : Screen("Answer")
+    data object Generator : Screen("Generator")
 }
 
 @Composable
@@ -33,6 +35,9 @@ fun MainScreen(viewModel: QuizViewModel, navController: NavHostController) {
         }
         composable(Screen.Categories.route) {
             CategoryScreen(viewModel, navController)
+        }
+        composable(Screen.Generator.route) {
+            GenerateQuizScreen(viewModel, navController)
         }
         composable(Screen.Leaderboard.route) {
             LeaderBoardScreen(viewModel, navController)

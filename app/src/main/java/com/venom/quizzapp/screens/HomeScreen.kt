@@ -52,10 +52,11 @@ fun HomeScreen(viewModel: QuizViewModel, navHostController: NavHostController) {
 
                     viewModel.triviaState.value.error != null -> {
                         Text(
-                            text = "ERROR OCCURRED ${viewModel.triviaState.value.error}",
+                            text = "ERROR OCCURRED",
                             fontSize = 25.sp,
                             color = MaterialTheme.colorScheme.error
                         )
+                        SubmitButton(text = "Reload") { viewModel.fetchTrivia() }
                     }
 
                     else -> {

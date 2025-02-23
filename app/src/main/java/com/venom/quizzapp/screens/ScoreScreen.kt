@@ -74,6 +74,7 @@ fun ScoreScreen(viewModel: QuizViewModel, navController: NavHostController) {
                     )
                     SubmitButton(text = "Finish") {
                         navController.navigate(Screen.Home.route)
+                        viewModel.resetAllVariables()
                     }
                 }
             }

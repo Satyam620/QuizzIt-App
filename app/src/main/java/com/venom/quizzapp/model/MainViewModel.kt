@@ -43,13 +43,13 @@ class QuizViewModel : ViewModel() {
 
     private val apiKey = BuildConfig.API_KEY
 
-    fun sendGeminiRequest(query: String) {
+    fun sendGeminiRequest(query: String, difficultyLevel: String) {
         val request = GeminiRequest(
             contents = listOf(
                 Content(
                     parts = listOf(
                         Part(
-                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions about $query in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"any\",\n      \"category\": \"$query\",\n      \"question\": \"Example question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
+                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions about $query in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"$difficultyLevel\",\n      \"category\": \"$query\",\n      \"question\": \"Example question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"explanation\": \"This is the explanation for why the correct answer is right.\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
                         )
                     )
                 )
@@ -82,6 +82,16 @@ class QuizViewModel : ViewModel() {
     var question = mutableStateOf("")
     var options = mutableStateOf(listOf<String>())
     val navigateToScore = mutableStateOf(false)
+    val selectedOptions = mutableListOf<String>()
+
+    fun resetAllVariables() {
+        score = 0
+        currentPosition = 0
+        currentProgress.floatValue = .1f
+        progress.value = "1/10"
+        question.value = ""
+        selectedOptions.clear()
+    }
 
     private fun shuffleOptions(): List<String> {
         val allOptions =
@@ -101,7 +111,6 @@ class QuizViewModel : ViewModel() {
         }
     }
 
-    val selectedOptions = mutableListOf<String>()
     fun updateQuestion(selectedOption: String?) {
         if (selectedOption == questionsState.value.list[currentPosition].correct_answer) {
             score++
@@ -135,7 +144,7 @@ class QuizViewModel : ViewModel() {
     val categoriesState: State<CategoryState> = _categoriesState
 
 
-    private fun fetchCategories() {
+    fun fetchCategories() {
         viewModelScope.launch {
             try {
                 val response = categoryService.getCategories()

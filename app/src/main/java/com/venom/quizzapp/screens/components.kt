@@ -71,22 +71,23 @@ fun TopBar(name: String) {
 data class NavItem(val label: String, val route: String, val icon: Int, val index: Int)
 
 @Composable
-fun BottomBar(viewModel: QuizViewModel,name: String, navController: NavHostController) {
+fun BottomBar(viewModel: QuizViewModel, name: String, navController: NavHostController) {
     QuizzappTheme {
         val iconSize = 40.dp
         val iconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
         val selectedIconColor = MaterialTheme.colorScheme.secondary
         val buttonColors =
-            remember { mutableStateListOf(iconColor, iconColor, iconColor, iconColor) }
+            remember { mutableStateListOf(iconColor, iconColor, iconColor, iconColor, iconColor) }
 
         val navItems = listOf(
             NavItem("Home", Screen.Home.route, R.drawable.round_home_24, 0),
             NavItem("Category", Screen.Categories.route, R.drawable.round_category_24, 1),
-            NavItem("Leaderboard", Screen.Leaderboard.route, R.drawable.round_leaderboard_24, 2),
-            NavItem("Profile", Screen.Profile.route, R.drawable.round_person_24, 3)
+            NavItem("Generator", Screen.Generator.route, R.drawable.ai_ml_icon, 2),
+            NavItem("Leaderboard", Screen.Leaderboard.route, R.drawable.round_leaderboard_24, 3),
+            NavItem("Profile", Screen.Profile.route, R.drawable.round_person_24, 4)
         )
 
-        val enabled = remember { mutableStateListOf(true, true, true, true) }
+        val enabled = remember { mutableStateListOf(true, true, true, true, true) }
 
         fun updateButtonColors(selectedIndex: Int) {
             buttonColors.fill(iconColor) // Reset all to white
@@ -117,7 +118,7 @@ fun BottomBar(viewModel: QuizViewModel,name: String, navController: NavHostContr
                         onClick = {
                             navController.navigate(item.route)
                             updateButtonColors(item.index)
-                            if(item.label == "Home") {
+                            if (item.label == "Home") {
                                 viewModel.fetchTrivia()
                             }
                         },
@@ -166,7 +167,7 @@ fun TopPreview() {
 fun BottomPreview() {
     QuizzappTheme {
         val context = LocalContext.current
-        BottomBar(QuizViewModel(),name = "Home", navController = NavHostController(context))
+        BottomBar(QuizViewModel(), name = "Home", navController = NavHostController(context))
     }
 }
 

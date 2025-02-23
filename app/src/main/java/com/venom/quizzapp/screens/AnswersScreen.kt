@@ -103,6 +103,13 @@ fun QuestionItem(index: Int, question: Question, viewModel: QuizViewModel) {
                     fontWeight = FontWeight.Medium,
                     color = Color.Green
                 )
+                if (question.explanation != null) {
+                    Text(
+                        text = "Explanation: ${decodeHtml(question.explanation)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
             } else {
                 Text(
                     text = "Correct Answer: ${decodeHtml(question.correct_answer)}",
