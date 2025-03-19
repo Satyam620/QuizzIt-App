@@ -75,7 +75,7 @@ fun decodeHtml(encodedString: String): String {
 
 @Composable
 fun QuestionItem(index: Int, question: Question, viewModel: QuizViewModel) {
-    val selectedOption: String = viewModel.selectedOptions[index]
+    val selectedOption: String? = viewModel.selectedOptions[index]
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -92,7 +92,7 @@ fun QuestionItem(index: Int, question: Question, viewModel: QuizViewModel) {
             Spacer(modifier = Modifier.height(8.dp))
             if (question.correct_answer != selectedOption) {
                 Text(
-                    text = "Your Answer: ${decodeHtml(selectedOption)}",
+                    text = "Your Answer: ${if (selectedOption != null) decodeHtml(selectedOption) else "Not Selected"}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                     color = Color.Red

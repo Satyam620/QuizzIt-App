@@ -12,6 +12,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.venom.quizzapp.model.QuizViewModel
+import com.venom.quizzapp.model.AuthViewModel
 import com.venom.quizzapp.ui.theme.QuizzappTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val viewModel by viewModels<QuizViewModel>()
+        val authViewModel by viewModels<AuthViewModel>()
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 !viewModel.isLoaded.value
@@ -45,7 +47,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             QuizzappTheme {
                 val navController = rememberNavController()
-                MainScreen(viewModel, navController)
+                MainScreen(viewModel, navController, authViewModel)
             }
         }
     }

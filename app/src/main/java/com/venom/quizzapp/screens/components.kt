@@ -143,7 +143,7 @@ fun SubmitButton(text: String, onClick: () -> Unit) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(.8f)
-                .border(3.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(50.dp))
+                .border(3.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(25.dp))
                 .height(50.dp),
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(

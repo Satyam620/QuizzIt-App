@@ -19,14 +19,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.venom.quizzapp.model.AuthViewModel
 import com.venom.quizzapp.model.QuizViewModel
 import com.venom.quizzapp.ui.theme.QuizzappTheme
 
 @Composable
-fun HomeScreen(viewModel: QuizViewModel, navHostController: NavHostController) {
+fun HomeScreen(
+    viewModel: QuizViewModel,
+    navHostController: NavHostController,
+    authViewModel: AuthViewModel
+) {
     if (!viewModel.logged.value) {
-        RegisterScreen(viewModel)
-        LoginScreen(viewModel)
+        RegisterScreen(viewModel, authViewModel)
+        LoginScreen(viewModel, authViewModel)
     }
     QuizzappTheme {
         Scaffold(
@@ -97,7 +102,8 @@ fun HomeScreen(viewModel: QuizViewModel, navHostController: NavHostController) {
 fun HomePreview() {
     HomeScreen(
         viewModel = QuizViewModel(),
-        navHostController = NavHostController(LocalContext.current)
+        navHostController = NavHostController(LocalContext.current),
+        authViewModel = AuthViewModel()
     )
 }
 

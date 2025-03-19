@@ -19,11 +19,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.venom.quizzapp.model.AuthViewModel
 import com.venom.quizzapp.model.QuizViewModel
 import com.venom.quizzapp.ui.theme.QuizzappTheme
 
 @Composable
-fun ProfileScreen(viewModel: QuizViewModel, navController: NavHostController) {
+fun ProfileScreen(
+    viewModel: QuizViewModel,
+    navController: NavHostController,
+    authViewModel: AuthViewModel
+) {
     QuizzappTheme {
         Scaffold(
             topBar = {
@@ -41,11 +46,20 @@ fun ProfileScreen(viewModel: QuizViewModel, navController: NavHostController) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LoginScreen(viewModel = viewModel)
-                RegisterScreen(viewModel = viewModel)
+                LoginScreen(viewModel = viewModel, authViewModel = authViewModel)
+                RegisterScreen(viewModel = viewModel, authViewModel = authViewModel)
                 if (viewModel.logged.value) {
                     Row {
                         //TODO Write profile page.
+                        Text(
+                            text = "Already logged in",
+                            fontSize = 50.sp,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier.padding(bottom = 50.dp),
+                            lineHeight = 50.sp
+                        )
                     }
                 } else {
                     Text(
@@ -71,6 +85,7 @@ fun ProfileScreen(viewModel: QuizViewModel, navController: NavHostController) {
 fun ProfilePreview() {
     ProfileScreen(
         viewModel = QuizViewModel(),
-        navController = NavHostController(LocalContext.current)
+        navController = NavHostController(LocalContext.current),
+        authViewModel = AuthViewModel()
     )
 }

@@ -43,6 +43,7 @@ import com.venom.quizzapp.ui.theme.QuizzappTheme
 @Composable
 fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
     var query by remember { mutableStateOf("") }
+    var subquery by remember { mutableStateOf("") }
     var difficultylevel by remember { mutableStateOf("Any") }
     val options = listOf("Easy", "Medium", "Hard", "Any")
     var expanded by remember { mutableStateOf(false) }
@@ -66,61 +67,33 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .fillMaxHeight(.8f)
                         .padding(20.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column {
-                        Text(
-                            text = "Enter a query to generate quiz.",
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 15.sp,
-                            modifier = Modifier.padding(10.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        TextField(
-                            value = query,
-                            onValueChange = { query = it },
-                            label = { Text("Enter Quiz Topic") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(
-                                    3.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                    RoundedCornerShape(10.dp)
-                                ),
-                            colors = TextFieldDefaults.colors(
-                                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedLabelColor = Color.Gray,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.primary,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                                focusedContainerColor = MaterialTheme.colorScheme.background,
-                            ),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                    }
-                    Column {
-                        Text(
-                            text = "Select difficulty level of the quiz.",
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 15.sp,
-                            modifier = Modifier.padding(10.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        ExposedDropdownMenuBox(
-                            expanded = expanded,
-                            onExpandedChange = { expanded = !expanded }
-                        ) {
-                            TextField(
-                                value = difficultylevel,
-                                onValueChange = {},
-                                readOnly = true,
-                                trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                                },
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight(.7f)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Column {
+                            Text(
+                                text = "Enter a query to generate quiz. *",
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontSize = 15.sp,
                                 modifier = Modifier
-                                    .menuAnchor()
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                            TextField(
+                                value = query,
+                                onValueChange = { query = it },
+                                label = { Text("Enter Subject") },
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .border(
                                         3.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
@@ -135,32 +108,106 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                                     unfocusedContainerColor = MaterialTheme.colorScheme.background,
                                     focusedContainerColor = MaterialTheme.colorScheme.background,
                                 ),
-                                shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                                shape = RoundedCornerShape(10.dp)
                             )
-                            ExposedDropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
+                        }
+                        Column {
+                            Text(
+                                text = "Enter a Sub-query to generate quiz.",
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontSize = 15.sp,
                                 modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                            TextField(
+                                value = subquery,
+                                onValueChange = { subquery = it },
+                                label = { Text("Enter Topic") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .border(
-                                        border = BorderStroke(
-                                            width = 2.dp,
-                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                                        ),
-                                        shape = RoundedCornerShape(
-                                            bottomEnd = 10.dp,
-                                            bottomStart = 10.dp
-                                        )
+                                        3.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                        RoundedCornerShape(10.dp)
                                     ),
+                                colors = TextFieldDefaults.colors(
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedLabelColor = Color.Gray,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    cursorColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                                ),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                        }
+                        Column {
+                            Text(
+                                text = "Select difficulty level of the quiz.",
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontSize = 15.sp,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                            ExposedDropdownMenuBox(
+                                expanded = expanded,
+                                onExpandedChange = { expanded = !expanded }
                             ) {
-                                options.forEach { option ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = option) },
-                                        onClick = {
-                                            difficultylevel = option
-                                            expanded = false
-                                        },
-                                    )
+                                TextField(
+                                    value = difficultylevel,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                                    },
+                                    modifier = Modifier
+                                        .menuAnchor()
+                                        .fillMaxWidth()
+                                        .border(
+                                            3.dp,
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                            RoundedCornerShape(10.dp)
+                                        ),
+                                    colors = TextFieldDefaults.colors(
+                                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        unfocusedLabelColor = Color.Gray,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        cursorColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                                        focusedContainerColor = MaterialTheme.colorScheme.background,
+                                    ),
+                                    shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                                )
+                                ExposedDropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false },
+                                    modifier = Modifier
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .border(
+                                            border = BorderStroke(
+                                                width = 2.dp,
+                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                                            ),
+                                            shape = RoundedCornerShape(
+                                                bottomEnd = 10.dp,
+                                                bottomStart = 10.dp
+                                            )
+                                        ),
+                                ) {
+                                    options.forEach { option ->
+                                        DropdownMenuItem(
+                                            text = { Text(text = option) },
+                                            onClick = {
+                                                difficultylevel = option
+                                                expanded = false
+                                            },
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -174,7 +221,7 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                                 RoundedCornerShape(10.dp)
                             ),
                         onClick = {
-                            viewModel.sendGeminiRequest(query, difficultylevel)
+                            viewModel.sendGeminiRequest(query, subquery, difficultylevel)
                             navController.navigate(Screen.QuizScreen.route)
                         },
                         colors = ButtonDefaults.buttonColors(

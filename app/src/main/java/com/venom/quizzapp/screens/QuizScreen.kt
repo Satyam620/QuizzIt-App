@@ -5,15 +5,20 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +27,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -79,32 +85,14 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                 else -> {
                     Text(
                         modifier = Modifier.padding(30.dp, 20.dp, 30.dp, 10.dp),
-                        text = decodeHtml(viewModel.question.value),
-                        fontSize = 25.sp,
+                        text = "Q${viewModel.currentPosition + 1}. " + decodeHtml(viewModel.question.value),
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center,
                         lineHeight = 25.sp
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        LinearProgressIndicator(
-                            progress = { viewModel.currentProgress.floatValue },
-                            modifier = Modifier
-                                .fillMaxWidth(.7F)
-                                .padding(end = 10.dp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = viewModel.progress.value,
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Column(
+                    TenButtonsInTwoRows(viewModel, viewModel.selectedOptions)
+                    LazyColumn(
                         modifier = Modifier
                             .padding(horizontal = 30.dp)
                             .fillMaxHeight(.8f)
@@ -112,8 +100,7 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                         verticalArrangement = Arrangement.SpaceEvenly,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Generate Option Buttons Dynamically
-                        viewModel.options.value.forEachIndexed { index, item ->
+                        itemsIndexed(viewModel.options.value) { index, item ->
                             Button(
                                 onClick = {
                                     updateButtonColors(index)
@@ -133,7 +120,7 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                             ) {
                                 Text(
                                     text = decodeHtml(item),
-                                    fontSize = 20.sp,
+                                    fontSize = 18.sp,
                                     lineHeight = 25.sp,
                                     color = MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.Center
@@ -149,6 +136,65 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                         }
                         selectedOption = null
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TenButtonsInTwoRows(
+    viewModel: QuizViewModel,
+    items: List<String?>
+) { // Replace String with your data type
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // First row with 5 buttons
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            for (i in 0 until 5) {
+                Button(
+                    onClick = { viewModel.updatePosition(i) },
+                    modifier = Modifier
+                        .size(50.dp) // Same size for consistency
+                        .padding(4.dp),
+                    shape = CircleShape,
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonColors(
+                        containerColor = if (viewModel.selectedOptions[i] != null) Color.Green else if (i == viewModel.currentPosition) Color.Cyan else Color.Red,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = Color.Black,
+                        disabledContentColor = Color.Black
+                    )
+                ) {
+                    Text(text = (i + 1).toString(), fontSize = 24.sp)
+                }
+            }
+        }
+        // Second row with 5 buttons
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            for (i in 5 until 10) {
+                Button(
+                    onClick = { viewModel.updatePosition(i) },
+                    modifier = Modifier
+                        .size(50.dp) // Same size for consistency
+                        .padding(4.dp),
+                    shape = CircleShape,
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonColors(
+                        containerColor = if (viewModel.selectedOptions[i] != null) Color.Green else if (i == viewModel.currentPosition) Color.Cyan else Color.Red,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = Color.Black,
+                        disabledContentColor = Color.Black
+                    )
+                ) {
+                    Text(text = (i + 1).toString(), fontSize = 24.sp)
                 }
             }
         }

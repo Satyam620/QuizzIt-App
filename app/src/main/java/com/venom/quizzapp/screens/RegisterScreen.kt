@@ -21,7 +21,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,16 +37,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.venom.quizzapp.model.AuthViewModel
 import com.venom.quizzapp.model.QuizViewModel
+import com.venom.quizzapp.model.Result
 import com.venom.quizzapp.ui.theme.QuizzappTheme
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(viewModel: QuizViewModel) {
+fun RegisterScreen(viewModel: QuizViewModel, authViewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    val result by authViewModel.authResult.observeAsState()
+    var message by remember { mutableStateOf("") }
+    var textColor by remember { mutableStateOf(Color.Green) }
 
     val textFieldColor = TextFieldDefaults.colors(
         focusedLabelColor = MaterialTheme.colorScheme.primary,
@@ -123,20 +130,17 @@ fun RegisterScreen(viewModel: QuizViewModel) {
                             ),
                         colors = textFieldColor
                     )
-                    TextField(
-                        value = confirmPassword,
-                        onValueChange = { confirmPassword = it },
-                        label = { Text("Confirm Password") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .border(
-                                1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                            ),
-                        colors = textFieldColor
-                    )
+                    if (message.isNotEmpty()) {
+                        Text(
+                            text = message,
+                            textAlign = TextAlign.Center,
+                            color = textColor
+                        )
+                        LaunchedEffect(Unit) {
+                            delay(3000) // 3 seconds
+                            message = ""
+                        }
+                    }
                     Button(
                         modifier = Modifier
                             .border(
@@ -146,10 +150,26 @@ fun RegisterScreen(viewModel: QuizViewModel) {
                             )
                             .height(40.dp),
                         onClick = {  //TODO Handle the Register action
-                            if (email.isNotEmpty() && password.isNotEmpty() && username.isNotEmpty() && confirmPassword.isNotEmpty()) {
-                                // TODO Perform Register action here
-                                viewModel.registerDialogue.value =
-                                    false
+                            if (email.isNotEmpty() && password.isNotEmpty() && username.isNotEmpty()) {
+                                authViewModel.signUp(email, password, username)
+                                when (result) {
+                                    is Result.Success -> {
+                                        textColor = Color.Green
+                                        message = "Success"
+                                        viewModel.registerDialogue.value = false
+                                        viewModel.loginDialogue.value = true
+                                    }
+
+                                    is Result.Error -> {
+                                        textColor = Color.Red
+                                        message = "Error"
+                                    }
+
+                                    else -> {
+
+                                    }
+                                }
+
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -199,6 +219,6 @@ fun RegisterScreen(viewModel: QuizViewModel) {
 @Composable
 fun RegisterScreenPreview() {
     QuizzappTheme {
-        RegisterScreen(QuizViewModel())
+        RegisterScreen(QuizViewModel(), AuthViewModel())
     }
 }

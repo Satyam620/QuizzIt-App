@@ -28,6 +28,7 @@ class QuizViewModel : ViewModel() {
     fun fetchQuestions(category: Int) {
         viewModelScope.launch {
             try {
+                resetAllVariables()
                 val response = questionService.getQuestion(category = category)
                 _questionsState.value = _questionsState.value.copy(
                     list = response.results, loading = false, error = null
@@ -43,13 +44,13 @@ class QuizViewModel : ViewModel() {
 
     private val apiKey = BuildConfig.API_KEY
 
-    fun sendGeminiRequest(query: String, difficultyLevel: String) {
+    fun sendGeminiRequest(query: String, subquery: String?, difficultyLevel: String) {
         val request = GeminiRequest(
             contents = listOf(
                 Content(
                     parts = listOf(
                         Part(
-                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions about $query in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"$difficultyLevel\",\n      \"category\": \"$query\",\n      \"question\": \"Example question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"explanation\": \"This is the explanation for why the correct answer is right.\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
+                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions about $query${if (subquery != null) "- $subquery" else ""} in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"$difficultyLevel\",\n      \"category\": \"$query\",\n      \"question\": \"Example question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"explanation\": \"This is the explanation for why the correct answer is right.\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
                         )
                     )
                 )
@@ -58,6 +59,7 @@ class QuizViewModel : ViewModel() {
         // Send request
         viewModelScope.launch {
             try {
+                resetAllVariables()
                 val geminiresponse = GeminiService.generateTrivia(apiKey, request)
                 val jsonString = geminiresponse.candidates[0].content.parts[0].text
                 val response = Gson().fromJson(jsonString, QuestionResponse::class.java)
@@ -76,13 +78,13 @@ class QuizViewModel : ViewModel() {
     //Question Data management.
 
     private var score = 0
-    private var currentPosition = 0
+    var currentPosition = 0
     var currentProgress = mutableFloatStateOf(.1f)
     var progress = mutableStateOf("1/10")
     var question = mutableStateOf("")
     var options = mutableStateOf(listOf<String>())
     val navigateToScore = mutableStateOf(false)
-    val selectedOptions = mutableListOf<String>()
+    val selectedOptions: MutableList<String?> = MutableList(10) { null }
 
     fun resetAllVariables() {
         score = 0
@@ -90,7 +92,20 @@ class QuizViewModel : ViewModel() {
         currentProgress.floatValue = .1f
         progress.value = "1/10"
         question.value = ""
-        selectedOptions.clear()
+        options.value = listOf<String>()
+        _questionsState.value = _questionsState.value.copy(
+            loading = true,
+        )
+        selectedOptions.fill(null)
+    }
+
+    fun updatePosition(index: Int) {
+        currentPosition = index
+        question.value = questionsState.value.list[currentPosition].question
+        currentProgress.floatValue =
+            (currentPosition + 1).toFloat() / questionsState.value.list.size
+        progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
+        options.value = shuffleOptions()
     }
 
     private fun shuffleOptions(): List<String> {
@@ -112,11 +127,9 @@ class QuizViewModel : ViewModel() {
     }
 
     fun updateQuestion(selectedOption: String?) {
-        if (selectedOption == questionsState.value.list[currentPosition].correct_answer) {
-            score++
+        if (selectedOptions[currentPosition] == null) {
+            selectedOptions[currentPosition] = selectedOption
         }
-        selectedOptions.add(selectedOption ?: "Not Selected")
-
         currentPosition++
         navigateToScore.value = (currentPosition == questionsState.value.list.size)
         if (currentPosition < questionsState.value.list.size) {
@@ -126,16 +139,9 @@ class QuizViewModel : ViewModel() {
             progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
             options.value = shuffleOptions()
         } else {
-            totalScore = score
-            score = 0
-            currentPosition = 0
-            currentProgress.floatValue = .1f
-            progress.value = "1/10"
-            question.value = ""
-            options.value = listOf()
-            _questionsState.value = _questionsState.value.copy(
-                loading = true,
-            )
+            for (index in 0..9) {
+                totalScore += if (selectedOptions[index] == questionsState.value.list[index].correct_answer) 1 else 0
+            }
         }
     }
 

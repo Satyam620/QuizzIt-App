@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.venom.quizzapp.model.AuthViewModel
 import com.venom.quizzapp.screens.HomeScreen
 import com.venom.quizzapp.screens.LeaderBoardScreen
 import com.venom.quizzapp.screens.ProfileScreen
@@ -26,12 +27,16 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun MainScreen(viewModel: QuizViewModel, navController: NavHostController) {
+fun MainScreen(
+    viewModel: QuizViewModel,
+    navController: NavHostController,
+    authViewModel: AuthViewModel
+) {
 
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         //Bottom Navigation Options
         composable(Screen.Home.route) {
-            HomeScreen(viewModel, navController)
+            HomeScreen(viewModel, navController, authViewModel)
         }
         composable(Screen.Categories.route) {
             CategoryScreen(viewModel, navController)
@@ -43,7 +48,7 @@ fun MainScreen(viewModel: QuizViewModel, navController: NavHostController) {
             LeaderBoardScreen(viewModel, navController)
         }
         composable(Screen.Profile.route) {
-            ProfileScreen(viewModel, navController)
+            ProfileScreen(viewModel, navController, authViewModel)
         }
 
         //Hidden Navigation Options
