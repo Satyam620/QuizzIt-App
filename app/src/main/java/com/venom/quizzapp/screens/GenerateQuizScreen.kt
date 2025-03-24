@@ -42,9 +42,6 @@ import com.venom.quizzapp.ui.theme.QuizzappTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
-    var query by remember { mutableStateOf("") }
-    var subquery by remember { mutableStateOf("") }
-    var difficultylevel by remember { mutableStateOf("Any") }
     val options = listOf("Easy", "Medium", "Hard", "Any")
     var expanded by remember { mutableStateOf(false) }
 
@@ -90,8 +87,8 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                                 textAlign = TextAlign.Center
                             )
                             TextField(
-                                value = query,
-                                onValueChange = { query = it },
+                                value = viewModel.query.value,
+                                onValueChange = { viewModel.query.value = it },
                                 label = { Text("Enter Subject") },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -122,8 +119,8 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                                 textAlign = TextAlign.Center
                             )
                             TextField(
-                                value = subquery,
-                                onValueChange = { subquery = it },
+                                value = viewModel.subquery.value,
+                                onValueChange = { viewModel.subquery.value = it },
                                 label = { Text("Enter Topic") },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -158,7 +155,7 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                                 onExpandedChange = { expanded = !expanded }
                             ) {
                                 TextField(
-                                    value = difficultylevel,
+                                    value = viewModel.difficultylevel.value,
                                     onValueChange = {},
                                     readOnly = true,
                                     trailingIcon = {
@@ -203,7 +200,7 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                                         DropdownMenuItem(
                                             text = { Text(text = option) },
                                             onClick = {
-                                                difficultylevel = option
+                                                viewModel.difficultylevel.value = option
                                                 expanded = false
                                             },
                                         )
@@ -221,7 +218,7 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                                 RoundedCornerShape(10.dp)
                             ),
                         onClick = {
-                            viewModel.sendGeminiRequest(query, subquery, difficultylevel)
+                            viewModel.sendGeminiRequest()
                             navController.navigate(Screen.QuizScreen.route)
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -229,7 +226,7 @@ fun GenerateQuizScreen(viewModel: QuizViewModel, navController: NavHostControlle
                             contentColor = MaterialTheme.colorScheme.secondary
                         ),
                         shape = RoundedCornerShape(10.dp),
-                        enabled = query.isNotEmpty()
+                        enabled = viewModel.query.value.isNotEmpty()
                     ) {
                         Text(text = "Generate", fontSize = 15.sp)
                     }

@@ -4,15 +4,7 @@ import android.text.Html
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,8 +53,23 @@ fun AnswerScreen(viewModel: QuizViewModel, navController: NavHostController) {
                         }
                     }
                 }
-                SubmitButton(text = "Next") {
-                    navController.navigate(Screen.Score.route)
+                if (viewModel.isAIGenerated.value) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        SubmitButton(text = "Retry", 0.4f) {
+                            viewModel.sendGeminiRegenerateRequest()
+                            navController.navigate(Screen.QuizScreen.route)
+                        }
+                        SubmitButton(text = "Score", 0.6f) {
+                            navController.navigate(Screen.Score.route)
+                        }
+                    }
+                } else {
+                    SubmitButton(text = "Score ") {
+                        navController.navigate(Screen.Score.route)
+                    }
                 }
             }
         }

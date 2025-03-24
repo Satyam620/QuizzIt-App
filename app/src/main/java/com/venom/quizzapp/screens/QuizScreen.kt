@@ -128,7 +128,7 @@ fun QuizScreen(viewModel: QuizViewModel, navController: NavHostController) {
                             }
                         }
                     }
-                    SubmitButton(text = "Next") {
+                    SubmitButton(text = if (viewModel.currentPosition == 9) "Finish" else "Next") {
                         buttonColors.fill(optionColor)
                         viewModel.updateQuestion(selectedOption)
                         if (viewModel.navigateToScore.value) {
@@ -159,8 +159,8 @@ fun TenButtonsInTwoRows(
                 Button(
                     onClick = { viewModel.updatePosition(i) },
                     modifier = Modifier
-                        .size(50.dp) // Same size for consistency
-                        .padding(4.dp),
+                        .size(40.dp) // Same size for consistency
+                        .padding(5.dp),
                     shape = CircleShape,
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonColors(
@@ -183,8 +183,8 @@ fun TenButtonsInTwoRows(
                 Button(
                     onClick = { viewModel.updatePosition(i) },
                     modifier = Modifier
-                        .size(50.dp) // Same size for consistency
-                        .padding(4.dp),
+                        .size(40.dp) // Same size for consistency
+                        .padding(5.dp),
                     shape = CircleShape,
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonColors(

@@ -1,21 +1,9 @@
 package com.venom.quizzapp.screens
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -120,6 +108,8 @@ fun BottomBar(viewModel: QuizViewModel, name: String, navController: NavHostCont
                             updateButtonColors(item.index)
                             if (item.label == "Home") {
                                 viewModel.fetchTrivia()
+                            } else if (item.label == "Generator") {
+                                viewModel.resetGenerateValues()
                             }
                         },
                         enabled = enabled[item.index]
@@ -138,11 +128,11 @@ fun BottomBar(viewModel: QuizViewModel, name: String, navController: NavHostCont
 }
 
 @Composable
-fun SubmitButton(text: String, onClick: () -> Unit) {
+fun SubmitButton(text: String, width: Float = 0.8f, onClick: () -> Unit) {
     QuizzappTheme {
         Button(
             modifier = Modifier
-                .fillMaxWidth(.8f)
+                .fillMaxWidth(width)
                 .border(3.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(25.dp))
                 .height(50.dp),
             onClick = onClick,

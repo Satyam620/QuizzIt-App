@@ -1,8 +1,11 @@
 package com.venom.quizzapp.model
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -15,6 +18,16 @@ class QuizViewModel : ViewModel() {
     private val _isLoaded = MutableStateFlow(false)
     val isLoaded = _isLoaded.asStateFlow()
 
+    var query = mutableStateOf("")
+    var subquery = mutableStateOf("")
+    var difficultylevel = mutableStateOf("Any")
+
+    fun resetGenerateValues() {
+        query.value = ""
+        subquery.value = ""
+        difficultylevel.value = "Any"
+    }
+
     init {
         fetchTrivia()
         fetchCategories()
@@ -24,6 +37,7 @@ class QuizViewModel : ViewModel() {
     //Question State Management.
     private var _questionsState = mutableStateOf(QuestionState())
     val questionsState: State<QuestionState> = _questionsState
+    val isAIGenerated = mutableStateOf(false)
 
     fun fetchQuestions(category: Int) {
         viewModelScope.launch {
@@ -44,13 +58,13 @@ class QuizViewModel : ViewModel() {
 
     private val apiKey = BuildConfig.API_KEY
 
-    fun sendGeminiRequest(query: String, subquery: String?, difficultyLevel: String) {
+    fun sendGeminiRequest() {
         val request = GeminiRequest(
             contents = listOf(
                 Content(
                     parts = listOf(
                         Part(
-                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions about $query${if (subquery != null) "- $subquery" else ""} in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"$difficultyLevel\",\n      \"category\": \"$query\",\n      \"question\": \"Example question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"explanation\": \"This is the explanation for why the correct answer is right.\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
+                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions about ${query.value} ${"- $subquery"} in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"${difficultylevel.value}\",\n      \"category\": \"$query\",\n      \"question\": \"Example question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"explanation\": \"This is the explanation for why the correct answer is right.\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
                         )
                     )
                 )
@@ -66,6 +80,40 @@ class QuizViewModel : ViewModel() {
                 _questionsState.value = _questionsState.value.copy(
                     list = response.results, loading = false, error = null
                 )
+                isAIGenerated.value = true
+                initializeQuestion()
+            } catch (e: Exception) {
+                _questionsState.value = _questionsState.value.copy(
+                    loading = false, error = "Error Fetching Questions"
+                )
+            }
+
+        }
+    }
+
+    fun sendGeminiRegenerateRequest() {
+        val request = GeminiRequest(
+            contents = listOf(
+                Content(
+                    parts = listOf(
+                        Part(
+                            text = "Generate a valid JSON response containing 10 multiple-choice trivia questions similar to the given question: \"$incorrectQuestions\" in the format:\n\n{\n  \"response_code\": 0,\n  \"results\": [\n    {\n      \"type\": \"multiple\",\n      \"difficulty\": \"${difficultylevel.value}\",\n      \"category\": \"${query.value}.\",\n      \"question\": \"Example similar question here?\",\n      \"correct_answer\": \"Correct Answer\",\n      \"explanation\": \"This is the explanation for why the correct answer is right.\",\n      \"incorrect_answers\": [\"Wrong 1\", \"Wrong 2\", \"Wrong 3\"]\n    }\n  ]\n}\n\nEnsure that the response is directly JSON-formatted with no additional text."
+                        )
+                    )
+                )
+            ), generationConfig = GenerationConfig(responseMimeType = "application/json")
+        )
+        // Send request
+        viewModelScope.launch {
+            try {
+                resetAllVariables()
+                val geminiresponse = GeminiService.generateTrivia(apiKey, request)
+                val jsonString = geminiresponse.candidates[0].content.parts[0].text
+                val response = Gson().fromJson(jsonString, QuestionResponse::class.java)
+                _questionsState.value = _questionsState.value.copy(
+                    list = response.results, loading = false, error = null
+                )
+                isAIGenerated.value = true
                 initializeQuestion()
             } catch (e: Exception) {
                 _questionsState.value = _questionsState.value.copy(
@@ -79,32 +127,37 @@ class QuizViewModel : ViewModel() {
 
     private var score = 0
     var currentPosition = 0
-    var currentProgress = mutableFloatStateOf(.1f)
-    var progress = mutableStateOf("1/10")
+
+    //    var currentProgress = mutableFloatStateOf(.1f)
+//    var progress = mutableStateOf("1/10")
     var question = mutableStateOf("")
     var options = mutableStateOf(listOf<String>())
     val navigateToScore = mutableStateOf(false)
     val selectedOptions: MutableList<String?> = MutableList(10) { null }
+    private val incorrectQuestions = StringBuilder()
 
     fun resetAllVariables() {
         score = 0
         currentPosition = 0
-        currentProgress.floatValue = .1f
-        progress.value = "1/10"
+//        currentProgress.floatValue = .1f
+//        progress.value = "1/10"
         question.value = ""
         options.value = listOf<String>()
         _questionsState.value = _questionsState.value.copy(
             loading = true,
         )
         selectedOptions.fill(null)
+        incorrectQuestions.clear()
+        isAIGenerated.value = false
+        totalScore = 0
     }
 
     fun updatePosition(index: Int) {
         currentPosition = index
         question.value = questionsState.value.list[currentPosition].question
-        currentProgress.floatValue =
-            (currentPosition + 1).toFloat() / questionsState.value.list.size
-        progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
+//        currentProgress.floatValue =
+//            (currentPosition + 1).toFloat() / questionsState.value.list.size
+//        progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
         options.value = shuffleOptions()
     }
 
@@ -120,9 +173,9 @@ class QuizViewModel : ViewModel() {
         if (questionsState.value.list.isNotEmpty()) {
             question.value = questionsState.value.list[currentPosition].question
             options.value = shuffleOptions()  // Shuffle options after initializing
-            currentProgress.floatValue =
-                (currentPosition + 1).toFloat() / questionsState.value.list.size
-            progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
+//            currentProgress.floatValue =
+//                (currentPosition + 1).toFloat() / questionsState.value.list.size
+//            progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
         }
     }
 
@@ -134,13 +187,20 @@ class QuizViewModel : ViewModel() {
         navigateToScore.value = (currentPosition == questionsState.value.list.size)
         if (currentPosition < questionsState.value.list.size) {
             question.value = questionsState.value.list[currentPosition].question
-            currentProgress.floatValue =
-                (currentPosition + 1).toFloat() / questionsState.value.list.size
-            progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
+//            currentProgress.floatValue =
+//                (currentPosition + 1).toFloat() / questionsState.value.list.size
+//            progress.value = "${currentPosition + 1}/${questionsState.value.list.size}"
             options.value = shuffleOptions()
         } else {
             for (index in 0..9) {
-                totalScore += if (selectedOptions[index] == questionsState.value.list[index].correct_answer) 1 else 0
+                if (selectedOptions[index] == questionsState.value.list[index].correct_answer) {
+                    totalScore += 1
+                } else {
+                    incorrectQuestions.append(questionsState.value.list[index].question)
+                    if (index != 9) {
+                        incorrectQuestions.append(", ")
+                    }
+                }
             }
         }
     }
