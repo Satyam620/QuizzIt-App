@@ -27,3 +27,11 @@
 1. Connect a device or start an emulator (Android 13+)
 2. Click on the Run ▶️ button in Android Studio
 3. Enjoy the app!
+
+### Quiz app designs.
+
+1. Light Mode ->
+![Screenshot 2025-03-26 102126](https://github.com/user-attachments/assets/2b2c3a62-6232-4c49-b8d0-4ede7432d2a0)
+
+2. Dark Mode ->
+![Screenshot 2025-03-26 101822](https://github.com/user-attachments/assets/d0f793ec-310a-4306-8588-c2965b1f9ba9)
