@@ -24,6 +24,6 @@
 
 ## 5. Build and Run
 
-1. Connect a device or start an emulator (Android 11+)
+1. Connect a device or start an emulator (Android 13+)
 2. Click on the Run ▶️ button in Android Studio
 3. Enjoy the app!
